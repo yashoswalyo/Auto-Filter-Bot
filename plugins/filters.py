@@ -14,7 +14,9 @@ from pyrogram.types import (
 	InlineKeyboardButton, 
 	InlineKeyboardMarkup, 
 	Message,
-	CallbackQuery
+	CallbackQuery,
+	Document,
+	Video
 )
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, UsernameNotOccupied, ChatAdminRequired, PeerIdInvalid
 from bot import Bot
@@ -36,11 +38,25 @@ async def filter(client: Bot, message: Message):
 	if len(message.text) > 2:	
 		btn = []
 		async for msg in client.USER.search_messages(MAINCHANNEL_ID,query=message.text,filter='document'):
-			file_name = msg.document.file_name
-			msg_id = msg.message_id					 
+			media:Document = msg.document
+			fsize = media.file_size/1024/1024
+			if fsize>1024:
+				fsize = str(round(fsize/1024,2)) + 'GB'
+			else: fsize = str(round(fsize,2)) + 'MB'
 			link = msg.link
 			btn.append(
-				[InlineKeyboardButton(text=f"{file_name}",url=f"{link}")]
+				[InlineKeyboardButton(text=f"{fsize} 🔸 {media.file_name}",url=f"{link}")]
+			)
+		async for msg in client.USER.search_messages(MAINCHANNEL_ID,query=message.text,filter='video'):
+			media:Video = msg.video
+			fsize = media.file_size/1024/1024
+			if fsize>1024:
+				fsize = str(round(fsize/1024,2)) + 'GB'
+			else: fsize = str(round(fsize,2)) + 'MB'
+			link = msg.link
+			# [InlineKeyboardButton(text=f"{media.file_name}",url=f"{link}"),InlineKeyboardButton(text=f"{fsize}",url=f"{link}")]
+			btn.append(
+				[InlineKeyboardButton(text=f"{fsize} 🔹 {media.file_name}",url=f"{link}"),InlineKeyboardButton(text=f"{fsize}",url=f"{link}")]
 			)
 
 		if not btn:
