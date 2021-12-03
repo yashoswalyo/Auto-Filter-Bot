@@ -37,13 +37,15 @@ async def filter(client: Bot, message: Message):
 		
 	if len(message.text) > 2:	
 		btn = []
-		async for msg in client.USER.search_messages(MAINCHANNEL_ID,query=message.text,filter='document'):
+		async for msg in client.USER.search_messages(MAINCHANNEL_ID,query=message.text,filter="document"):
 			media:Document = msg.document
 			fsize = media.file_size/1024/1024
 			if fsize>1024:
 				fsize = str(round(fsize/1024,2)) + 'GB'
 			else: fsize = str(round(fsize,2)) + 'MB'
 			link = msg.link
+			# med.append(f"{fsize} 🔸 {media.file_name}")
+			# links.append(msg.link)
 			btn.append(
 				[InlineKeyboardButton(text=f"{fsize} 🔸 {media.file_name}",url=f"{link}")]
 			)
@@ -53,15 +55,33 @@ async def filter(client: Bot, message: Message):
 			if fsize>1024:
 				fsize = str(round(fsize/1024,2)) + 'GB'
 			else: fsize = str(round(fsize,2)) + 'MB'
+			# med.append(f"{fsize} 🔹 {media.file_name}")
+			# links.append(msg.link)
 			link = msg.link
-			# [InlineKeyboardButton(text=f"{media.file_name}",url=f"{link}"),InlineKeyboardButton(text=f"{fsize}",url=f"{link}")]
+			[InlineKeyboardButton(text=f"{media.file_name}",url=f"{link}"),InlineKeyboardButton(text=f"{fsize}",url=f"{link}")]
 			btn.append(
 				[InlineKeyboardButton(text=f"{fsize} 🔹 {media.file_name}",url=f"{link}")]
 			)
-
+		# link = []
+		# # print(links,med)
+		# for i in range(len(links)):
+		# 	link.append(links[i].split('/')[-1])
+		# print(link)
+		# for i in range(len(links)):
+		# 	min_idx=i
+		# 	for j in range(i+1, len(links)):
+		# 		if link[min_idx] > link[j]:
+		# 			min_idx = j
+		# 	link[i], link[min_idx] = link[min_idx], link[i]
+		# 	links[i], links[min_idx] = links[min_idx], links[i]
+		# 	med[i], med[min_idx] = med[min_idx], med[i]
+		# print("\n",link,"\n")
+		# for i in range(len(links)):
+		# 	btn.append(
+		# 		[InlineKeyboardButton(text=f"{med[i]}",url=f"{links[i]}")]
+		# 	)
 		if not btn:
 			return
-
 		if len(btn) > 10: 
 			btns = list(split_list(btn, 10)) 
 			keyword = f"{message.chat.id}-{message.message_id}"
