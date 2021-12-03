@@ -20,15 +20,6 @@ async def ForceSub(bot: Client, event: Message):
 	"""
 	
 	try:
-		invite_link = await bot.create_chat_invite_link(chat_id=(int(MAINCHANNEL_ID) if MAINCHANNEL_ID.startswith("-100") else MAINCHANNEL_ID))
-	except FloodWait as e:
-		await asyncio.sleep(e.x)
-		fix_ = await ForceSub(bot, event)
-		return fix_
-	except Exception as err:
-		print(f"Unable to do Force Subscribe to {MAINCHANNEL_ID}\n\nError: {err}\n\nContact Support Group:" )
-		return 200
-	try:
 		user = await bot.get_chat_member(chat_id=(int(MAINCHANNEL_ID) if MAINCHANNEL_ID.startswith("-100") else MAINCHANNEL_ID), user_id=event.from_user.id)
 		if user.status == "kicked":
 			await bot.send_message(
@@ -48,7 +39,7 @@ async def ForceSub(bot: Client, event: Message):
 			reply_markup=InlineKeyboardMarkup(
 				[
 					[
-						InlineKeyboardButton("Join Our Channel 🔔", url=invite_link.invite_link)
+						InlineKeyboardButton("Join Our Channel 🔔", url="https://t.me/+EOcwTsiENqI0NjRl")
 					],
 					[ 
 						InlineKeyboardButton("Unmute Me", callback_data=f"unmute_{event.from_user.id}")
