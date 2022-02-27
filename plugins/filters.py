@@ -26,7 +26,7 @@ from plugins.forceSub import ForceSub
 
 BUTTONS = {}
  
-@Client.on_message(filters.group & filters.text)
+@Client.on_message(filters.group & filters.text & ~filters.edited)
 async def filter(client: Bot, message: Message):
 	if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
 		return
@@ -45,7 +45,7 @@ async def filter(client: Bot, message: Message):
 			if fsize>1024:
 				fsize = str(round(fsize/1024,2)) + 'GB'
 			else: fsize = str(round(fsize,2)) + 'MB'
-			fileNames.append(f"{fsize} 🔸 {media.file_name}")
+			fileNames.append(f"{fsize} 📁 {media.file_name}")
 			links.append(msg.link)
 			# link = msg.link
 			# btn.append(
@@ -57,7 +57,7 @@ async def filter(client: Bot, message: Message):
 			if fsize>1024:
 				fsize = str(round(fsize/1024,2)) + 'GB'
 			else: fsize = str(round(fsize,2)) + 'MB'
-			fileNames.append(f"{fsize} 🔹 {media.file_name}")
+			fileNames.append(f"{fsize} 📽️ {media.file_name}")
 			links.append(msg.link)
 			# link = msg.link
 			# [InlineKeyboardButton(text=f"{media.file_name}",url=f"{link}"),InlineKeyboardButton(text=f"{fsize}",url=f"{link}")]
