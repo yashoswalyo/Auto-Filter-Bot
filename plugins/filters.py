@@ -25,21 +25,34 @@ from config import MAINCHANNEL_ID
 from plugins.forceSub import ForceSub
 
 BUTTONS = {}
- 
-@Client.on_message(filters.group & filters.text & ~filters.edited)
+
+@Client.on_message( filters.command(['search','s']) & filters.group & ~filters.edited)
 async def filter(client: Bot, message: Message):
-	if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
+	try:
+		sQuery = message.text.split(' ',1)[1]
+		if message.reply_to_message is not None:
+			replyToMessageId = message.reply_to_message.message_id
+		else:
+			replyToMessageId = message.message_id
+	except Exception:
+		await message.reply_text(
+			text="**Send a keyword along with command.\nExample: /search `The walking dead`**",
+			parse_mode="markdown",
+			quote=True,
+		)
+		return
+	if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", sQuery):
 		return
 
 	a = await ForceSub(bot=client,event=message)
 	if a==400:
 		return
 		
-	if len(message.text) > 2:	
+	if len(sQuery) > 2:	
 		btn = []
 		fileNames = []
 		links = []
-		async for msg in client.USER.search_messages(MAINCHANNEL_ID,query=message.text,filter="document"):
+		async for msg in client.USER.search_messages(MAINCHANNEL_ID,query=sQuery,filter="document"):
 			media:Document = msg.document
 			fsize = media.file_size/1024/1024
 			if fsize>1024:
@@ -51,7 +64,7 @@ async def filter(client: Bot, message: Message):
 			# btn.append(
 			# 	[InlineKeyboardButton(text=f"{fsize} 🔸 {media.file_name}",url=f"{link}")]
 			# )
-		async for msg in client.USER.search_messages(MAINCHANNEL_ID,query=message.text,filter='video'):
+		async for msg in client.USER.search_messages(MAINCHANNEL_ID,query=sQuery,filter='video'):
 			media:Video = msg.video
 			fsize = media.file_size/1024/1024
 			if fsize>1024:
@@ -97,9 +110,10 @@ async def filter(client: Bot, message: Message):
 			buttons.append(
 				[InlineKeyboardButton(text="📃 Pages 1/1",callback_data="pages")]
 			)
-			await message.reply_text(
-				f"<b> Here is the result for {message.text}</b>",
-				reply_markup=InlineKeyboardMarkup(buttons)
+			await message.reply(
+				text=f"<b> Here is the result for {sQuery}</b>",
+				reply_markup=InlineKeyboardMarkup(buttons),
+				reply_to_message_id= replyToMessageId
 			)
 			return
 
@@ -113,9 +127,10 @@ async def filter(client: Bot, message: Message):
 			[InlineKeyboardButton(text=f"📃 Pages 1/{data['total']}",callback_data="pages")]
 		)
 
-		await message.reply_text(
-				f"<b> Here is the result for {message.text}</b>",
-				reply_markup=InlineKeyboardMarkup(buttons)
+		await message.reply(
+				text=f"<b> Here is the result for {sQuery}</b>",
+				reply_markup=InlineKeyboardMarkup(buttons),
+				reply_to_message_id=replyToMessageId
 			)	
 
 
